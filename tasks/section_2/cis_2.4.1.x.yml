@@ -169,3 +169,14 @@
         owner: root
         group: '{{ "crontab" if "crontab" in ansible_facts.getent_group else "root" }}'
         mode: 'u-x,g-wx,o-rwx'
+
+    - name: "2.4.1.9 | PATCH | Ensure access to crontab is configured | Ensure deb13cis_cron_allow_users are in crontab group"
+      when: '"crontab" in ansible_facts.getent_group'
+      ansible.builtin.user:
+        name: "{{ item }}"
+        groups: ['crontab']
+        create_home: false
+        append: true
+      loop: "{{ deb13cis_cron_allow_users | default([]) }}"
+      loop_control:
+        label: "{{ item }}"
